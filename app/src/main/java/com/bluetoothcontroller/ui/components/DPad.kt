@@ -79,29 +79,30 @@ fun DPad(
             }
     ) {
         Canvas(modifier = Modifier.matchParentSize()) {
-            val width = size.width
-            val height = size.height
-            val center = Offset(width / 2f, height / 2f)
-            val thickness = width * 0.35f
+            val w = this.size.width
+            val h = this.size.height
+            val cX = w / 2f
+            val cY = h / 2f
+            val thickness = w * 0.35f
+            val halfT = thickness / 2f
             
             val baseColor = Color(0xFF161B22).copy(alpha = opacity)
             val highlightColor = color.copy(alpha = opacity)
             
             // Draw cross
             val path = Path().apply {
-                val halfT = thickness / 2f
-                moveTo(center.x - halfT, 0f)
-                lineTo(center.x + halfT, 0f)
-                lineTo(center.x + halfT, center.y - halfT)
-                lineTo(width, center.y - halfT)
-                lineTo(width, center.y + halfT)
-                lineTo(center.x + halfT, center.y + halfT)
-                lineTo(center.x + halfT, height)
-                lineTo(center.x - halfT, height)
-                lineTo(center.x - halfT, center.y + halfT)
-                lineTo(0f, center.y + halfT)
-                lineTo(0f, center.y - halfT)
-                lineTo(center.x - halfT, center.y - halfT)
+                moveTo(cX - halfT, 0f)
+                lineTo(cX + halfT, 0f)
+                lineTo(cX + halfT, cY - halfT)
+                lineTo(w, cY - halfT)
+                lineTo(w, cY + halfT)
+                lineTo(cX + halfT, cY + halfT)
+                lineTo(cX + halfT, h)
+                lineTo(cX - halfT, h)
+                lineTo(cX - halfT, cY + halfT)
+                lineTo(0f, cY + halfT)
+                lineTo(0f, cY - halfT)
+                lineTo(cX - halfT, cY - halfT)
                 close()
             }
             
@@ -114,16 +115,16 @@ fun DPad(
             val isRight = currentDirection in listOf(DpadDirection.RIGHT, DpadDirection.UP_RIGHT, DpadDirection.DOWN_RIGHT)
 
             if (isUp) {
-                drawRect(color = highlightColor, topLeft = Offset(center.x - thickness/2, 0f), size = Size(thickness, center.y))
+                drawRect(color = highlightColor, topLeft = Offset(cX - halfT, 0f), size = Size(thickness, cY))
             }
             if (isDown) {
-                drawRect(color = highlightColor, topLeft = Offset(center.x - thickness/2, center.y), size = Size(thickness, center.y))
+                drawRect(color = highlightColor, topLeft = Offset(cX - halfT, cY), size = Size(thickness, cY))
             }
             if (isLeft) {
-                drawRect(color = highlightColor, topLeft = Offset(0f, center.y - thickness/2), size = Size(center.x, thickness))
+                drawRect(color = highlightColor, topLeft = Offset(0f, cY - halfT), size = Size(cX, thickness))
             }
             if (isRight) {
-                drawRect(color = highlightColor, topLeft = Offset(center.x, center.y - thickness/2), size = Size(center.x, thickness))
+                drawRect(color = highlightColor, topLeft = Offset(cX, cY - halfT), size = Size(cX, thickness))
             }
         }
     }

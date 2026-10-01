@@ -30,9 +30,6 @@ class ProfileRepository {
     }
 
     fun getDefaultProfiles(): List<ControllerProfile> {
-        return listOf(
-            ControllerProfile("1", "Default Gamepad"),
-            ControllerProfile("2", "Media Controller")
-        )
+        return ControllerProfile.DEFAULT_PROFILES
     }
 }

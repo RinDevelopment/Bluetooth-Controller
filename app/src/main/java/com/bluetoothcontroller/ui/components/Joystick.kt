@@ -109,8 +109,8 @@ fun Joystick(
             }
     ) {
         Canvas(modifier = Modifier.matchParentSize()) {
-            val center = size.center
-            val radius = size.width / 2f
+            val center = this.center
+            val radius = this.size.width / 2f
             val thumbRadius = radius * 0.4f
 
             // Base

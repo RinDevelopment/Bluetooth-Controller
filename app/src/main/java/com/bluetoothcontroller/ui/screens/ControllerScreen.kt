@@ -68,7 +68,7 @@ fun ControllerScreen(
         // Left Controls
         Column(
             modifier = Modifier
-                .align(Alignment.CenterLeft)
+                .align(Alignment.CenterStart)
                 .padding(start = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -128,7 +128,7 @@ fun ControllerScreen(
         // Right Controls
         Column(
             modifier = Modifier
-                .align(Alignment.CenterRight)
+                .align(Alignment.CenterEnd)
                 .padding(end = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -166,7 +166,7 @@ fun ControllerScreen(
                     size = 56.dp,
                     onPress = { /* viewModel.pressButton(X) */ },
                     onRelease = { /* viewModel.releaseButton(X) */ },
-                    modifier = Modifier.align(Alignment.CenterLeft)
+                    modifier = Modifier.align(Alignment.CenterStart)
                 )
                 GameButton(
                     label = "B",
@@ -174,7 +174,7 @@ fun ControllerScreen(
                     size = 56.dp,
                     onPress = { /* viewModel.pressButton(B) */ },
                     onRelease = { /* viewModel.releaseButton(B) */ },
-                    modifier = Modifier.align(Alignment.CenterRight)
+                    modifier = Modifier.align(Alignment.CenterEnd)
                 )
                 GameButton(
                     label = "A",

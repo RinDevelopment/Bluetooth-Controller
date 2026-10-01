@@ -56,7 +56,7 @@ fun KeyboardScreen(
 }
 
 @Composable
-fun KeyboardKey(
+fun RowScope.KeyboardKey(
     label: String,
     modifier: Modifier = Modifier,
     isWide: Boolean = false,
@@ -71,7 +71,7 @@ fun KeyboardKey(
         modifier = modifier
             .padding(2.dp)
             .height(56.dp)
-            .let { if (isWide) it.fillMaxWidth() else it.weight(weight) }
+            .then(if (isWide) Modifier.fillMaxWidth() else Modifier.weight(weight))
             .background(
                 color = if (isPressed) Color(0xFF2196F3) else Color(0xFF161B22),
                 shape = RoundedCornerShape(4.dp)
@@ -80,7 +80,7 @@ fun KeyboardKey(
                 detectTapGestures(
                     onPress = {
                         isPressed = true
-                        haptic.performHapticFeedback(HapticFeedbackType.KeyboardPress)
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         onPress()
                         tryAwaitRelease()
                         isPressed = false
@@ -145,7 +145,9 @@ fun GamingKeyboardLayout() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(116.dp)) // Offset to align with bottom rows
-            KeyboardKey("Up")
+            Row(modifier = Modifier.fillMaxWidth()) {
+                KeyboardKey("Up", weight = 1f)
+            }
             Row(modifier = Modifier.fillMaxWidth()) {
                 KeyboardKey("Left", weight = 1f)
                 KeyboardKey("Down", weight = 1f)

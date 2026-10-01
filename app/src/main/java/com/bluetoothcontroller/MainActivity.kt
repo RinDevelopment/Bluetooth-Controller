@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.bluetoothcontroller.navigation.NavGraph
+import com.bluetoothcontroller.navigation.BluetoothControllerNavGraph
 import com.bluetoothcontroller.ui.theme.BluetoothControllerTheme
 
 class MainActivity : ComponentActivity() {
@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NavGraph()
+                    BluetoothControllerNavGraph()
                 }
             }
         }
