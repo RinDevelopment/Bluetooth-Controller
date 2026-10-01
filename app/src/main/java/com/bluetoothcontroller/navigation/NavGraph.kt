@@ -55,6 +55,7 @@ fun BluetoothControllerNavGraph(
         
         composable(Routes.CONTROLLER) {
             ControllerScreen(
+                viewModel = viewModel(),
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToSettings = { navController.navigate(Routes.SETTINGS) }
             )
@@ -62,6 +63,7 @@ fun BluetoothControllerNavGraph(
         
         composable(Routes.KEYBOARD) {
             KeyboardScreen(
+                viewModel = viewModel(),
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToSettings = { navController.navigate(Routes.SETTINGS) }
             )
@@ -69,6 +71,7 @@ fun BluetoothControllerNavGraph(
         
         composable(Routes.MOUSE) {
             MouseScreen(
+                viewModel = viewModel(),
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToSettings = { navController.navigate(Routes.SETTINGS) }
             )

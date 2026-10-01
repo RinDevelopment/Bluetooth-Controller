@@ -8,10 +8,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.bluetoothcontroller.mouse.MouseState
 import com.bluetoothcontroller.ui.components.Touchpad
+import com.bluetoothcontroller.ui.viewmodels.MouseViewModel
 
 @Composable
 fun MouseScreen(
+    viewModel: MouseViewModel = viewModel(),
     onNavigateBack: () -> Unit,
     onNavigateToSettings: () -> Unit
 ) {
@@ -51,11 +55,11 @@ fun MouseScreen(
                 .weight(1f)
                 .padding(16.dp),
             sensitivity = sensitivity,
-            onMove = { dx, dy -> /* viewModel.moveMouse(dx, dy) */ },
-            onTap = { /* viewModel.clickLeft() */ },
-            onDoubleTap = { /* viewModel.doubleClick() */ },
-            onTwoFingerTap = { /* viewModel.clickRight() */ },
-            onScroll = { dy -> /* viewModel.scroll(dy) */ }
+            onMove = { dx, dy -> viewModel.onMove(dx, dy, sensitivity) },
+            onTap = { viewModel.clickButton(MouseState.BUTTON_LEFT) },
+            onDoubleTap = { viewModel.clickButton(MouseState.BUTTON_LEFT) },
+            onTwoFingerTap = { viewModel.clickButton(MouseState.BUTTON_RIGHT) },
+            onScroll = { dy -> viewModel.onScroll(dy) }
         )
 
         // Mouse Buttons
@@ -67,19 +71,19 @@ fun MouseScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Button(
-                onClick = { /* viewModel.clickLeft() */ },
+                onClick = { viewModel.clickButton(MouseState.BUTTON_LEFT) },
                 modifier = Modifier.weight(2f).fillMaxHeight(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF161B22))
             ) { Text("LEFT") }
             
             Button(
-                onClick = { /* viewModel.clickMiddle() */ },
+                onClick = { viewModel.clickButton(MouseState.BUTTON_MIDDLE) },
                 modifier = Modifier.weight(1f).fillMaxHeight(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF161B22))
             ) { Text("MIDDLE") }
             
             Button(
-                onClick = { /* viewModel.clickRight() */ },
+                onClick = { viewModel.clickButton(MouseState.BUTTON_RIGHT) },
                 modifier = Modifier.weight(2f).fillMaxHeight(),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF161B22))
             ) { Text("RIGHT") }

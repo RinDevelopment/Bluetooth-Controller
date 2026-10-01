@@ -4,8 +4,9 @@ import android.content.pm.ActivityInfo
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -15,20 +16,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.bluetoothcontroller.bluetooth.ConnectionState
 import com.bluetoothcontroller.controller.DpadDirection
+import com.bluetoothcontroller.controller.GameButton
 import com.bluetoothcontroller.ui.components.DPad
-import com.bluetoothcontroller.ui.components.GameButton
+import com.bluetoothcontroller.ui.components.GameButton as ControllerGameButton
 import com.bluetoothcontroller.ui.components.Joystick
 import com.bluetoothcontroller.ui.components.TriggerButton
-import kotlinx.coroutines.delay
+import com.bluetoothcontroller.ui.viewmodels.ControllerViewModel
 
 @Composable
 fun ControllerScreen(
+    viewModel: ControllerViewModel = viewModel(),
     onNavigateBack: () -> Unit,
-    onNavigateToSettings: () -> Unit,
-    // viewModel: ControllerViewModel would go here
+    onNavigateToSettings: () -> Unit
 ) {
     val context = LocalContext.current
+    val connectionState by viewModel.connectionState.collectAsState()
     
     // Request landscape orientation
     DisposableEffect(Unit) {
@@ -56,49 +61,61 @@ fun ControllerScreen(
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            val statusColor = when (connectionState) {
+                ConnectionState.CONNECTED -> Color(0xFF4CAF50)
+                ConnectionState.CONNECTING, ConnectionState.RECONNECTING -> Color(0xFFFF9800)
+                else -> Color(0xFFF44336)
+            }
+            val statusText = when (connectionState) {
+                ConnectionState.CONNECTED -> "Connected"
+                ConnectionState.CONNECTING -> "Connecting..."
+                ConnectionState.RECONNECTING -> "Reconnecting..."
+                else -> "Disconnected"
+            }
+
             Box(
                 modifier = Modifier
                     .size(8.dp)
-                    .background(Color.Green, shape = androidx.compose.foundation.shape.CircleShape)
+                    .background(statusColor, shape = CircleShape)
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Connected", color = Color.White, fontSize = 12.sp)
+            Text(statusText, color = Color.White, fontSize = 12.sp)
         }
 
         // Left Controls
         Column(
             modifier = Modifier
                 .align(Alignment.CenterStart)
-                .padding(start = 32.dp),
+                .padding(start = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TriggerButton(
                 label = "L2",
                 color = Color.White,
-                width = 60.dp,
-                height = 80.dp,
+                width = 56.dp,
+                height = 70.dp,
                 isAnalog = true,
-                onValueChange = { /* viewModel.updateL2(it) */ }
+                onValueChange = { viewModel.onTriggerChange(true, it) }
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            GameButton(
+            Spacer(modifier = Modifier.height(6.dp))
+            ControllerGameButton(
                 label = "L1",
                 color = Color.White,
-                size = 60.dp,
-                onPress = { /* viewModel.pressButton(L1) */ },
-                onRelease = { /* viewModel.releaseButton(L1) */ }
+                size = 56.dp,
+                onPress = { viewModel.onButtonPress(GameButton.L1) },
+                onRelease = { viewModel.onButtonRelease(GameButton.L1) }
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             Joystick(
-                size = 140.dp,
-                onMove = { x, y -> /* viewModel.updateLeftStick(x, y) */ },
-                onPress = { /* viewModel.pressButton(L3) */ },
-                onRelease = { /* viewModel.releaseButton(L3) */ }
+                size = 130.dp,
+                onMove = { x, y -> viewModel.onJoystickMove(true, x, y) },
+                onPress = { viewModel.onButtonPress(GameButton.LEFT_STICK_PRESS) },
+                onRelease = { viewModel.onButtonRelease(GameButton.LEFT_STICK_PRESS) }
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             DPad(
-                size = 120.dp,
-                onDirectionChange = { /* viewModel.updateDpad(it) */ }
+                size = 110.dp,
+                onDirectionChange = { viewModel.onDpadPress(it) }
             )
         }
 
@@ -106,22 +123,22 @@ fun ControllerScreen(
         Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 32.dp),
-            horizontalArrangement = Arrangement.spacedBy(32.dp)
+                .padding(bottom = 24.dp),
+            horizontalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            GameButton(
+            ControllerGameButton(
                 label = "SELECT",
                 color = Color.Gray,
-                size = 50.dp,
-                onPress = { /* viewModel.pressButton(SELECT) */ },
-                onRelease = { /* viewModel.releaseButton(SELECT) */ }
+                size = 46.dp,
+                onPress = { viewModel.onButtonPress(GameButton.SELECT) },
+                onRelease = { viewModel.onButtonRelease(GameButton.SELECT) }
             )
-            GameButton(
+            ControllerGameButton(
                 label = "START",
                 color = Color.Gray,
-                size = 50.dp,
-                onPress = { /* viewModel.pressButton(START) */ },
-                onRelease = { /* viewModel.releaseButton(START) */ }
+                size = 46.dp,
+                onPress = { viewModel.onButtonPress(GameButton.START) },
+                onRelease = { viewModel.onButtonRelease(GameButton.START) }
             )
         }
 
@@ -129,84 +146,88 @@ fun ControllerScreen(
         Column(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .padding(end = 32.dp),
+                .padding(end = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TriggerButton(
                 label = "R2",
                 color = Color.White,
-                width = 60.dp,
-                height = 80.dp,
+                width = 56.dp,
+                height = 70.dp,
                 isAnalog = true,
-                onValueChange = { /* viewModel.updateR2(it) */ }
+                onValueChange = { viewModel.onTriggerChange(false, it) }
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            GameButton(
+            Spacer(modifier = Modifier.height(6.dp))
+            ControllerGameButton(
                 label = "R1",
                 color = Color.White,
-                size = 60.dp,
-                onPress = { /* viewModel.pressButton(R1) */ },
-                onRelease = { /* viewModel.releaseButton(R1) */ }
+                size = 56.dp,
+                onPress = { viewModel.onButtonPress(GameButton.R1) },
+                onRelease = { viewModel.onButtonRelease(GameButton.R1) }
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             
             // ABXY Diamond
-            Box(modifier = Modifier.size(160.dp)) {
-                GameButton(
+            Box(modifier = Modifier.size(150.dp)) {
+                ControllerGameButton(
                     label = "Y",
                     color = Color(0xFFFFC107),
-                    size = 56.dp,
-                    onPress = { /* viewModel.pressButton(Y) */ },
-                    onRelease = { /* viewModel.releaseButton(Y) */ },
+                    size = 52.dp,
+                    onPress = { viewModel.onButtonPress(GameButton.Y) },
+                    onRelease = { viewModel.onButtonRelease(GameButton.Y) },
                     modifier = Modifier.align(Alignment.TopCenter)
                 )
-                GameButton(
+                ControllerGameButton(
                     label = "X",
                     color = Color(0xFF2196F3),
-                    size = 56.dp,
-                    onPress = { /* viewModel.pressButton(X) */ },
-                    onRelease = { /* viewModel.releaseButton(X) */ },
+                    size = 52.dp,
+                    onPress = { viewModel.onButtonPress(GameButton.X) },
+                    onRelease = { viewModel.onButtonRelease(GameButton.X) },
                     modifier = Modifier.align(Alignment.CenterStart)
                 )
-                GameButton(
+                ControllerGameButton(
                     label = "B",
                     color = Color(0xFFF44336),
-                    size = 56.dp,
-                    onPress = { /* viewModel.pressButton(B) */ },
-                    onRelease = { /* viewModel.releaseButton(B) */ },
+                    size = 52.dp,
+                    onPress = { viewModel.onButtonPress(GameButton.B) },
+                    onRelease = { viewModel.onButtonRelease(GameButton.B) },
                     modifier = Modifier.align(Alignment.CenterEnd)
                 )
-                GameButton(
+                ControllerGameButton(
                     label = "A",
                     color = Color(0xFF4CAF50),
-                    size = 56.dp,
-                    onPress = { /* viewModel.pressButton(A) */ },
-                    onRelease = { /* viewModel.releaseButton(A) */ },
+                    size = 52.dp,
+                    onPress = { viewModel.onButtonPress(GameButton.A) },
+                    onRelease = { viewModel.onButtonRelease(GameButton.A) },
                     modifier = Modifier.align(Alignment.BottomCenter)
                 )
             }
             
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(10.dp))
             Joystick(
-                size = 120.dp,
-                onMove = { x, y -> /* viewModel.updateRightStick(x, y) */ },
-                onPress = { /* viewModel.pressButton(R3) */ },
-                onRelease = { /* viewModel.releaseButton(R3) */ }
+                size = 110.dp,
+                onMove = { x, y -> viewModel.onJoystickMove(false, x, y) },
+                onPress = { viewModel.onButtonPress(GameButton.RIGHT_STICK_PRESS) },
+                onRelease = { viewModel.onButtonRelease(GameButton.RIGHT_STICK_PRESS) }
             )
         }
 
-        // Bottom Bar
+        // Top navigation icons
         Row(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .align(Alignment.TopStart)
+                .padding(8.dp)
         ) {
             IconButton(onClick = onNavigateBack) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
             }
+        }
+        
+        Row(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(8.dp)
+        ) {
             IconButton(onClick = onNavigateToSettings) {
                 Icon(Icons.Default.Settings, contentDescription = "Settings", tint = Color.White)
             }

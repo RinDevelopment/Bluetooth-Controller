@@ -5,16 +5,24 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Assessment
+import androidx.compose.material.icons.filled.Bluetooth
+import androidx.compose.material.icons.filled.Keyboard
+import androidx.compose.material.icons.filled.Mouse
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.bluetoothcontroller.ui.components.ConnectionStatusBar
 import com.bluetoothcontroller.ui.viewmodels.HomeViewModel
 
@@ -63,55 +71,61 @@ fun HomeScreen(
                 item {
                     HomeCard(
                         title = "Game Controller",
-                        description = "Play games on other devices",
-                        icon = "🎮",
+                        description = "Play games with virtual gamepad",
+                        icon = Icons.Default.SportsEsports,
+                        iconTint = Color(0xFF2196F3),
                         onClick = onNavigateToController
                     )
                 }
                 item {
                     HomeCard(
                         title = "Keyboard",
-                        description = "Type on other devices",
-                        icon = "⌨️",
+                        description = "Full QWERTY & Gaming layout",
+                        icon = Icons.Default.Keyboard,
+                        iconTint = Color(0xFF00BCD4),
                         onClick = onNavigateToKeyboard
                     )
                 }
                 item {
                     HomeCard(
                         title = "Mouse",
-                        description = "Control cursor",
-                        icon = "🖱️",
+                        description = "Touchpad with gestures",
+                        icon = Icons.Default.Mouse,
+                        iconTint = Color(0xFF9C27B0),
                         onClick = onNavigateToMouse
                     )
                 }
                 item {
                     HomeCard(
                         title = "Connect Device",
-                        description = "Pair via Bluetooth",
-                        icon = "🔗",
+                        description = "Pair via Bluetooth HID",
+                        icon = Icons.Default.Bluetooth,
+                        iconTint = Color(0xFF4CAF50),
                         onClick = onNavigateToPairing
                     )
                 }
                 item {
                     HomeCard(
                         title = "Settings",
-                        description = "Configure app",
-                        icon = "⚙️",
+                        description = "Sensitivity & Appearance",
+                        icon = Icons.Default.Settings,
+                        iconTint = Color(0xFFFF9800),
                         onClick = onNavigateToSettings
                     )
                 }
                 item {
                     HomeCard(
                         title = "Compatibility",
-                        description = "Check support",
-                        icon = "📊",
+                        description = "Check HID & LE support",
+                        icon = Icons.Default.Assessment,
+                        iconTint = Color(0xFFE91E63),
                         onClick = onNavigateToCompatibility
                     )
                 }
             }
             
             Text(
-                text = "Privacy: Your input stays on your devices",
+                text = "Privacy: Offline only. All input stays on your devices.",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                 textAlign = TextAlign.Center,
@@ -127,7 +141,8 @@ fun HomeScreen(
 fun HomeCard(
     title: String,
     description: String,
-    icon: String,
+    icon: ImageVector,
+    iconTint: Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -136,7 +151,7 @@ fun HomeCard(
             .fillMaxWidth()
             .aspectRatio(1f)
             .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
@@ -149,10 +164,13 @@ fun HomeCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = icon,
-                fontSize = 40.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
+            Icon(
+                imageVector = icon,
+                contentDescription = title,
+                tint = iconTint,
+                modifier = Modifier
+                    .size(44.dp)
+                    .padding(bottom = 8.dp)
             )
             Text(
                 text = title,

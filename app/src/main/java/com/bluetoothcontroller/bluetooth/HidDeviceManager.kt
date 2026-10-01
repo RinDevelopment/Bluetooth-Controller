@@ -158,12 +158,25 @@ class HidDeviceManager {
     }
 
     @SuppressLint("MissingPermission")
+    fun connect(device: BluetoothDevice): Boolean {
+        actualDevice = device
+        return try {
+            hidDevice?.connect(device) ?: false
+        } catch (e: SecurityException) {
+            Log.e(TAG, "SecurityException connecting HID device", e)
+            false
+        }
+    }
+
+    @SuppressLint("MissingPermission")
     fun disconnect() {
         try {
-            if (actualDevice != null) {
-                // HID Device does not expose disconnect() publicly in API, but we can manage local state
-                _connectionState.value = ConnectionState.DISCONNECTED
+            if (actualDevice != null && hidDevice != null) {
+                hidDevice?.disconnect(actualDevice)
             }
+            _connectionState.value = ConnectionState.DISCONNECTED
+            _connectedDevice.value = null
+            actualDevice = null
         } catch (e: SecurityException) {
             Log.e(TAG, "SecurityException in disconnect")
         }

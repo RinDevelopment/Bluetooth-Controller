@@ -14,13 +14,16 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.bluetoothcontroller.ui.viewmodels.KeyboardViewModel
 
 @Composable
 fun KeyboardScreen(
+    viewModel: KeyboardViewModel = viewModel(),
     onNavigateBack: () -> Unit,
     onNavigateToSettings: () -> Unit
 ) {
-    var isGamingMode by remember { mutableStateOf(false) }
+    val isGamingMode by viewModel.isGamingMode.collectAsState()
 
     Column(
         modifier = Modifier
@@ -39,7 +42,7 @@ fun KeyboardScreen(
             Button(onClick = onNavigateBack) { Text("Back") }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Gaming Mode", color = Color.White, modifier = Modifier.padding(end = 8.dp))
-                Switch(checked = isGamingMode, onCheckedChange = { isGamingMode = it })
+                Switch(checked = isGamingMode, onCheckedChange = { viewModel.toggleGamingMode() })
             }
             Button(onClick = onNavigateToSettings) { Text("Settings") }
         }
@@ -48,9 +51,9 @@ fun KeyboardScreen(
 
         // Keyboard layout
         if (isGamingMode) {
-            GamingKeyboardLayout()
+            GamingKeyboardLayout(viewModel)
         } else {
-            FullKeyboardLayout()
+            FullKeyboardLayout(viewModel)
         }
     }
 }
@@ -95,29 +98,61 @@ fun RowScope.KeyboardKey(
 }
 
 @Composable
-fun FullKeyboardLayout() {
+fun FullKeyboardLayout(viewModel: KeyboardViewModel) {
     Column(modifier = Modifier.padding(8.dp)) {
         val row1 = listOf("Esc", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "Back")
         val row2 = listOf("Tab", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "Del")
         val row3 = listOf("Caps", "A", "S", "D", "F", "G", "H", "J", "K", "L", "Enter")
         val row4 = listOf("Shift", "Z", "X", "C", "V", "B", "N", "M", ",", ".", "Shift")
 
-        Row(modifier = Modifier.fillMaxWidth()) { row1.forEach { KeyboardKey(it) } }
-        Row(modifier = Modifier.fillMaxWidth()) { row2.forEach { KeyboardKey(it) } }
-        Row(modifier = Modifier.fillMaxWidth()) { row3.forEach { KeyboardKey(it) } }
-        Row(modifier = Modifier.fillMaxWidth()) { row4.forEach { KeyboardKey(it) } }
         Row(modifier = Modifier.fillMaxWidth()) {
-            KeyboardKey("Ctrl", weight = 1.5f)
-            KeyboardKey("Alt", weight = 1.5f)
-            KeyboardKey("Space", weight = 5f)
-            KeyboardKey("Alt", weight = 1.5f)
-            KeyboardKey("Fn", weight = 1.5f)
+            row1.forEach { key ->
+                KeyboardKey(
+                    label = key,
+                    onPress = { viewModel.onKeyLabelPressed(key) },
+                    onRelease = { viewModel.onKeyLabelReleased(key) }
+                )
+            }
+        }
+        Row(modifier = Modifier.fillMaxWidth()) {
+            row2.forEach { key ->
+                KeyboardKey(
+                    label = key,
+                    onPress = { viewModel.onKeyLabelPressed(key) },
+                    onRelease = { viewModel.onKeyLabelReleased(key) }
+                )
+            }
+        }
+        Row(modifier = Modifier.fillMaxWidth()) {
+            row3.forEach { key ->
+                KeyboardKey(
+                    label = key,
+                    onPress = { viewModel.onKeyLabelPressed(key) },
+                    onRelease = { viewModel.onKeyLabelReleased(key) }
+                )
+            }
+        }
+        Row(modifier = Modifier.fillMaxWidth()) {
+            row4.forEach { key ->
+                KeyboardKey(
+                    label = key,
+                    onPress = { viewModel.onKeyLabelPressed(key) },
+                    onRelease = { viewModel.onKeyLabelReleased(key) }
+                )
+            }
+        }
+        Row(modifier = Modifier.fillMaxWidth()) {
+            KeyboardKey("Ctrl", weight = 1.5f, onPress = { viewModel.onKeyLabelPressed("Ctrl") }, onRelease = { viewModel.onKeyLabelReleased("Ctrl") })
+            KeyboardKey("Alt", weight = 1.5f, onPress = { viewModel.onKeyLabelPressed("Alt") }, onRelease = { viewModel.onKeyLabelReleased("Alt") })
+            KeyboardKey("Space", weight = 5f, onPress = { viewModel.onKeyLabelPressed("Space") }, onRelease = { viewModel.onKeyLabelReleased("Space") })
+            KeyboardKey("Alt", weight = 1.5f, onPress = { viewModel.onKeyLabelPressed("Alt") }, onRelease = { viewModel.onKeyLabelReleased("Alt") })
+            KeyboardKey("Enter", weight = 1.5f, onPress = { viewModel.onKeyLabelPressed("Enter") }, onRelease = { viewModel.onKeyLabelReleased("Enter") })
         }
     }
 }
 
 @Composable
-fun GamingKeyboardLayout() {
+fun GamingKeyboardLayout(viewModel: KeyboardViewModel) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -130,11 +165,29 @@ fun GamingKeyboardLayout() {
             val row3 = listOf("Shift", "A", "S", "D", "F", "G")
             val row4 = listOf("Ctrl", "Z", "X", "C", "V", "B")
             
-            Row(modifier = Modifier.fillMaxWidth()) { row1.forEach { KeyboardKey(it) } }
-            Row(modifier = Modifier.fillMaxWidth()) { row2.forEach { KeyboardKey(it) } }
-            Row(modifier = Modifier.fillMaxWidth()) { row3.forEach { KeyboardKey(it) } }
-            Row(modifier = Modifier.fillMaxWidth()) { row4.forEach { KeyboardKey(it) } }
-            Row(modifier = Modifier.fillMaxWidth()) { KeyboardKey("Space", isWide = true) }
+            Row(modifier = Modifier.fillMaxWidth()) {
+                row1.forEach { key ->
+                    KeyboardKey(key, onPress = { viewModel.onKeyLabelPressed(key) }, onRelease = { viewModel.onKeyLabelReleased(key) })
+                }
+            }
+            Row(modifier = Modifier.fillMaxWidth()) {
+                row2.forEach { key ->
+                    KeyboardKey(key, onPress = { viewModel.onKeyLabelPressed(key) }, onRelease = { viewModel.onKeyLabelReleased(key) })
+                }
+            }
+            Row(modifier = Modifier.fillMaxWidth()) {
+                row3.forEach { key ->
+                    KeyboardKey(key, onPress = { viewModel.onKeyLabelPressed(key) }, onRelease = { viewModel.onKeyLabelReleased(key) })
+                }
+            }
+            Row(modifier = Modifier.fillMaxWidth()) {
+                row4.forEach { key ->
+                    KeyboardKey(key, onPress = { viewModel.onKeyLabelPressed(key) }, onRelease = { viewModel.onKeyLabelReleased(key) })
+                }
+            }
+            Row(modifier = Modifier.fillMaxWidth()) {
+                KeyboardKey("Space", isWide = true, onPress = { viewModel.onKeyLabelPressed("Space") }, onRelease = { viewModel.onKeyLabelReleased("Space") })
+            }
         }
         
         Spacer(modifier = Modifier.width(16.dp))
@@ -144,14 +197,14 @@ fun GamingKeyboardLayout() {
             modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(116.dp)) // Offset to align with bottom rows
+            Spacer(modifier = Modifier.height(116.dp))
             Row(modifier = Modifier.fillMaxWidth()) {
-                KeyboardKey("Up", weight = 1f)
+                KeyboardKey("Up", weight = 1f, onPress = { viewModel.onKeyLabelPressed("Up") }, onRelease = { viewModel.onKeyLabelReleased("Up") })
             }
             Row(modifier = Modifier.fillMaxWidth()) {
-                KeyboardKey("Left", weight = 1f)
-                KeyboardKey("Down", weight = 1f)
-                KeyboardKey("Right", weight = 1f)
+                KeyboardKey("Left", weight = 1f, onPress = { viewModel.onKeyLabelPressed("Left") }, onRelease = { viewModel.onKeyLabelReleased("Left") })
+                KeyboardKey("Down", weight = 1f, onPress = { viewModel.onKeyLabelPressed("Down") }, onRelease = { viewModel.onKeyLabelReleased("Down") })
+                KeyboardKey("Right", weight = 1f, onPress = { viewModel.onKeyLabelPressed("Right") }, onRelease = { viewModel.onKeyLabelReleased("Right") })
             }
         }
     }

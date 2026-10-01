@@ -1,5 +1,6 @@
 package com.bluetoothcontroller.keyboard
 
+import com.bluetoothcontroller.keyboard.KeyboardMapper.KeyCodes
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

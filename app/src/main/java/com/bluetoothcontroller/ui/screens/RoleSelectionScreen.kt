@@ -3,14 +3,18 @@ package com.bluetoothcontroller.ui.screens
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Smartphone
+import androidx.compose.material.icons.filled.SportsEsports
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 @Composable
 fun RoleSelectionScreen(
@@ -30,28 +34,30 @@ fun RoleSelectionScreen(
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.padding(bottom = 48.dp)
+            modifier = Modifier.padding(bottom = 36.dp)
         )
 
         RoleCard(
             title = "Controller",
-            description = "This phone controls another device",
-            icon = "🎮",
+            description = "This phone acts as a Bluetooth gamepad, keyboard, and mouse.",
+            icon = Icons.Default.SportsEsports,
+            iconTint = MaterialTheme.colorScheme.primary,
             onClick = onNavigateToHome,
             modifier = Modifier.weight(1f).fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         RoleCard(
             title = "Receiver",
-            description = "This phone receives controls",
-            icon = "📱",
+            description = "This phone receives Bluetooth controls from another device.",
+            icon = Icons.Default.Smartphone,
+            iconTint = MaterialTheme.colorScheme.secondary,
             onClick = onNavigateToReceiver,
             modifier = Modifier.weight(1f).fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(48.dp))
+        Spacer(modifier = Modifier.height(36.dp))
 
         TextButton(onClick = onNavigateToCompatibility) {
             Text(
@@ -66,7 +72,8 @@ fun RoleSelectionScreen(
 fun RoleCard(
     title: String,
     description: String,
-    icon: String,
+    icon: ImageVector,
+    iconTint: Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -76,7 +83,7 @@ fun RoleCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Column(
             modifier = Modifier
@@ -85,10 +92,13 @@ fun RoleCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(
-                text = icon,
-                fontSize = 64.sp,
-                modifier = Modifier.padding(bottom = 16.dp)
+            Icon(
+                imageVector = icon,
+                contentDescription = title,
+                tint = iconTint,
+                modifier = Modifier
+                    .size(64.dp)
+                    .padding(bottom = 12.dp)
             )
             Text(
                 text = title,

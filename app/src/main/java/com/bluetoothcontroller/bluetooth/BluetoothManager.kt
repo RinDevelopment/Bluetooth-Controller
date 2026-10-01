@@ -18,7 +18,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class BluetoothManager(private val hidDeviceManager: HidDeviceManager) {
+class BluetoothManager(
+    private val hidDeviceManager: HidDeviceManager,
+    private val fallbackManager: FallbackManager? = null
+) {
     private val TAG = "BluetoothManager"
 
     val connectionState = hidDeviceManager.connectionState
@@ -140,9 +143,20 @@ class BluetoothManager(private val hidDeviceManager: HidDeviceManager) {
     fun connectToDevice(context: Context, address: String) {
         val device = adapter?.getRemoteDevice(address) ?: return
         try {
-            // Placeholder: Host must connect to us usually.
+            _errorMessage.value = null
+            if (device.bondState != BluetoothDevice.BOND_BONDED) {
+                device.createBond()
+            }
+            val hidSuccess = hidDeviceManager.connect(device)
+            if (!hidSuccess) {
+                fallbackManager?.connectToServer(context, address)
+            }
         } catch (e: SecurityException) {
             _errorMessage.value = "Missing connect permissions"
+            Log.e(TAG, "SecurityException in connectToDevice", e)
+        } catch (e: Exception) {
+            _errorMessage.value = "Connection error: ${e.message}"
+            Log.e(TAG, "Exception in connectToDevice", e)
         }
     }
 

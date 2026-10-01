@@ -17,14 +17,14 @@ class MouseStateTest {
     @Test
     fun `withButton sets and clears button bits correctly`() {
         var state = MouseState().withButton(MouseState.BUTTON_LEFT, true)
-        assertTrue(state.isLeftPressed())
+        assertTrue(state.isLeftPressed)
         
         state = state.withButton(MouseState.BUTTON_RIGHT, true)
-        assertTrue(state.isRightPressed())
+        assertTrue(state.isRightPressed)
         
         state = state.withButton(MouseState.BUTTON_LEFT, false)
-        assertFalse(state.isLeftPressed())
-        assertTrue(state.isRightPressed())
+        assertFalse(state.isLeftPressed)
+        assertTrue(state.isRightPressed)
     }
     
     @Test
@@ -47,7 +47,7 @@ class MouseStateTest {
         assertEquals(0, state.deltaX)
         assertEquals(0, state.deltaY)
         assertEquals(0, state.wheelDelta)
-        assertTrue(state.isLeftPressed())
+        assertTrue(state.isLeftPressed)
     }
     
     @Test
